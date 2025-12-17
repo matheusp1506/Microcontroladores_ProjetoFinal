@@ -1,0 +1,59 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake Configure",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-S", ".",
+                "-B", "build",
+                "-DCMAKE_TOOLCHAIN_FILE=cmake/avr-gcc-toolchain.cmake",
+                "-G", "Ninja"
+            ],
+            "problemMatcher": "$gcc",
+            "group": "build"
+        },
+        {
+            "label": "CMake Build",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "build"
+            ],
+            "dependsOn": [
+                "CMake Configure"
+            ],
+            "problemMatcher": "$gcc",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Clean",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build", "build",
+                "--target", "clean"
+            ]
+        },
+        {
+            "label": "Flash (avrdude)",
+            "type": "shell",
+            "command": "avrdude",
+            "args": [
+                "-v",
+                "-p", "m2560",
+                "-c", "wiring",
+                "-P", "COM5",               // CHANGE THIS
+                "-b", "115200",
+                "-D",
+                "-U", "flash:w:${workspaceFolder}/build/AVRProject.hex:i"
+            ],
+            "dependsOn": "CMake Build",
+            "problemMatcher": []
+        }
+    ]
+}
